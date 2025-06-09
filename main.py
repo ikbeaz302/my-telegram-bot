@@ -276,8 +276,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 reply_markup=reply_markup
             )
         else:
+            share_text = "🎯 Бот, который дает сигналы на Aviator! 🚀\nЗапускай и зарабатывай! 💰"
+            import urllib.parse
+            encoded_text = urllib.parse.quote(share_text)
             keyboard = [
-                [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user.id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")],
+                [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")],
                 [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
@@ -352,7 +355,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         attempts_left = bot_instance.check_and_reset_attempts(user_id)
 
         if attempts_left <= 0:
-            keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")]]
+            share_text = "🎯 Бот, который дает сигналы на Aviator! 🚀\nЗапускай и зарабатывай! 💰"
+            import urllib.parse
+            encoded_text = urllib.parse.quote(share_text)
+            keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await query.edit_message_text(
                 "😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
@@ -391,7 +397,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             reply_markup = InlineKeyboardMarkup(keyboard)
             caption = f"🎯 Ваш сигнал: {coefficient}x\n\n📊 Попыток осталось: {new_attempts_left}/3"
         else:
-            keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")]]
+            share_text = "🎯 Бот, который дает сигналы на Aviator! 🚀\nЗапускай и зарабатывай! 💰"
+            import urllib.parse
+            encoded_text = urllib.parse.quote(share_text)
+            keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             caption = f"🎯 Ваш сигнал: {coefficient}x\n\n📊 Попытки закончились! Пригласите друга для получения дополнительных попыток."
 
@@ -454,8 +463,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                     reply_markup=reply_markup
                 )
             else:
+                share_text = "🎯 Бот, который дает сигналы на Aviator! 🚀\nЗапускай и зарабатывай! 💰"
+                import urllib.parse
+                encoded_text = urllib.parse.quote(share_text)
                 keyboard = [
-                    [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")],
+                    [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")],
                     [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
@@ -567,7 +579,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         elif waiting_for == 'id_prefix':
             bot_instance.set_setting('valid_id_prefix', text)
             await update.message.reply_text(f"✅ Префикс для валидных ID обновлен: {text}")
-        
+
         elif waiting_for == 'broadcast_message':
             users = bot_instance.get_all_users()
             success_count = 0
