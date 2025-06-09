@@ -338,6 +338,19 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     data = query.data
 
     if data == "registered":
+        # Проверяем, есть ли уже зарегистрированный ID
+        user_data = bot_instance.get_user(user_id)
+        if user_data and user_data[3]:  # win_id уже существует
+            keyboard = [[InlineKeyboardButton("🔙 Вернуться в меню", callback_data="back_to_main")]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await query.edit_message_text(
+                "❌ Вы уже зарегистрированы!\n\n"
+                f"🆔 Ваш ID: {user_data[3]}\n\n"
+                "Для получения новых попыток дождитесь обновления (каждые 12 часов) или пригласите друзей.",
+                reply_markup=reply_markup
+            )
+            return
+
         await query.edit_message_text(
             "🆔 Введите ваш ID от 1win:",
             reply_markup=None
@@ -345,6 +358,19 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         context.user_data['waiting_for_id'] = True
 
     elif data == "enter_id":
+        # Проверяем, есть ли уже зарегистрированный ID
+        user_data = bot_instance.get_user(user_id)
+        if user_data and user_data[3]:  # win_id уже существует
+            keyboard = [[InlineKeyboardButton("🔙 Вернуться в меню", callback_data="back_to_main")]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await query.edit_message_text(
+                "❌ Вы уже зарегистрированы!\n\n"
+                f"🆔 Ваш ID: {user_data[3]}\n\n"
+                "Для получения новых попыток дождитесь обновления (каждые 12 часов) или пригласите друзей.",
+                reply_markup=reply_markup
+            )
+            return
+
         await query.edit_message_text(
             "🆔 Введите ваш ID от 1win:",
             reply_markup=None
@@ -544,7 +570,7 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         valid_prefixes = bot_instance.get_setting('valid_id_prefix')
         # Поддержка нескольких префиксов через запятую
         prefix_list = [prefix.strip() for prefix in valid_prefixes.split(',')]
-        
+
         # Проверяем, начинается ли ID с любого из валидных префиксов
         is_valid = any(text.startswith(prefix) for prefix in prefix_list)
 
