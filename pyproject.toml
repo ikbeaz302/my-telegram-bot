@@ -1,9 +1,11 @@
+
 [project]
-name = "python-template"
+name = "aviator-signal-bot"
 version = "0.1.0"
-description = ""
+description = "Aviator Signal Bot for Telegram"
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 dependencies = [
-    "telegram>=0.0.1",
+    "python-telegram-bot>=20.0",
+    "pillow>=10.0.0",
 ]
