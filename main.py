@@ -245,13 +245,30 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             except:
                 pass
     
+    # Если это администратор - показываем админ-панель сразу
+    if user.id == ADMIN_ID:
+        keyboard = [
+            [InlineKeyboardButton("🔧 Админ-панель", callback_data="show_admin_panel")],
+            [InlineKeyboardButton("🎯 Получить сигнал Aviator", callback_data="get_signal")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text(
+            f"👑 Добро пожаловать, администратор!\n\n"
+            f"🎯 Вы можете использовать бота как обычный пользователь или управлять им через админ-панель.",
+            reply_markup=reply_markup
+        )
+        return
+    
     # Проверяем, есть ли уже зарегистрированный ID
     user_data = bot_instance.get_user(user.id)
     if user_data and user_data[3]:  # win_id существует
         attempts_left = bot_instance.check_and_reset_attempts(user.id)
         
         if attempts_left > 0:
-            keyboard = [[InlineKeyboardButton("🎯 Получить сигнал Aviator", callback_data="get_signal")]]
+            keyboard = [
+                [InlineKeyboardButton("🎯 Получить сигнал Aviator", callback_data="get_signal")],
+                [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
+            ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
                 f"🎯 Добро пожаловать в бота \"Сигнал от Aviator\"! ✈️\n\n"
@@ -260,7 +277,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 reply_markup=reply_markup
             )
         else:
-            keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user.id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")]]
+            keyboard = [
+                [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user.id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")],
+                [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
+            ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
                 "😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
@@ -381,6 +401,67 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             caption=caption,
             reply_markup=reply_markup
         )
+    
+    elif data == "show_admin_panel" and user_id == ADMIN_ID:
+        keyboard = [
+            [InlineKeyboardButton("🔗 Изменить ссылку 1win", callback_data="admin_change_link")],
+            [InlineKeyboardButton("🆔 Изменить валидность ID", callback_data="admin_change_id_prefix")],
+            [InlineKeyboardButton("👥 Список пользователей", callback_data="admin_users_list")],
+            [InlineKeyboardButton("🔄 Сбросить попытки", callback_data="admin_reset_attempts")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await query.edit_message_text(
+            "🔧 Админ-панель бота \"Сигнал от Aviator\"\n\nВыберите действие:",
+            reply_markup=reply_markup
+        )
+    
+    elif data == "my_referral_link":
+        referral_link = f"https://t.me/{BOT_USERNAME}?start=ref={user_id}"
+        share_link = f"https://t.me/share/url?url={referral_link}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰"
+        
+        keyboard = [
+            [InlineKeyboardButton("📤 Поделиться ссылкой", url=share_link)],
+            [InlineKeyboardButton("◀️ Назад", callback_data="back_to_main")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await query.edit_message_text(
+            f"🔗 Ваша реферальная ссылка:\n\n"
+            f"`{referral_link}`\n\n"
+            f"💡 Отправьте эту ссылку друзьям!\n"
+            f"За каждого приглашенного друга вы получите +1 попытку!",
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
+        )
+    
+    elif data == "back_to_main":
+        user_data = bot_instance.get_user(user_id)
+        if user_data and user_data[3]:  # win_id существует
+            attempts_left = bot_instance.check_and_reset_attempts(user_id)
+            
+            if attempts_left > 0:
+                keyboard = [
+                    [InlineKeyboardButton("🎯 Получить сигнал Aviator", callback_data="get_signal")],
+                    [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                await query.edit_message_text(
+                    f"🎯 Добро пожаловать в бота \"Сигнал от Aviator\"! ✈️\n\n"
+                    f"У вас осталось попыток: {attempts_left}/3\n\n"
+                    f"Нажмите кнопку ниже, чтобы получить сигнал! 🚀",
+                    reply_markup=reply_markup
+                )
+            else:
+                keyboard = [
+                    [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text=🎯 Бот, который дает сигналы на Aviator! 🚀%0AЗапускай и зарабатывай! 💰")],
+                    [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                await query.edit_message_text(
+                    "😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
+                    reply_markup=reply_markup
+                )
     
     # Админ панель
     elif data.startswith("admin_") and user_id == ADMIN_ID:
