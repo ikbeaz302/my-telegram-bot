@@ -282,6 +282,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             reply_markup=reply_markup
         )
 
+async def get_my_id(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Получить свой Telegram ID"""
+    user_id = update.effective_user.id
+    await update.message.reply_text(f"🆔 Ваш Telegram ID: {user_id}")
+
 async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Админ-панель"""
     if update.effective_user.id != ADMIN_ID:
@@ -469,6 +474,7 @@ def main() -> None:
     
     # Обработчики
     application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("myid", get_my_id))
     application.add_handler(CommandHandler("admin", admin_panel))
     application.add_handler(CallbackQueryHandler(button_callback))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
