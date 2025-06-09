@@ -541,9 +541,14 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     if context.user_data.get('waiting_for_id'):
         context.user_data['waiting_for_id'] = False
 
-        valid_prefix = bot_instance.get_setting('valid_id_prefix')
+        valid_prefixes = bot_instance.get_setting('valid_id_prefix')
+        # Поддержка нескольких префиксов через запятую
+        prefix_list = [prefix.strip() for prefix in valid_prefixes.split(',')]
+        
+        # Проверяем, начинается ли ID с любого из валидных префиксов
+        is_valid = any(text.startswith(prefix) for prefix in prefix_list)
 
-        if not text.startswith(valid_prefix):
+        if not is_valid:
             casino_link = bot_instance.get_setting('casino_link')
             keyboard = [
                 [InlineKeyboardButton("🎰 Зарегистрируйтесь тут", url=casino_link)],
