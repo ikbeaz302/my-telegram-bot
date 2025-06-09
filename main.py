@@ -244,6 +244,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             except:
                 pass
 
+    # Получаем данные пользователя для проверки регистрации
+    user_data = bot_instance.get_user(user.id)
+
     # Если это администратор - показываем админ-панель сразу
     if user.id == ADMIN_ID:
         keyboard = [
@@ -259,8 +262,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     # Проверяем, есть ли уже зарегистрированный ID
-    user_data = bot_instance.get_user(user.id)
-    if user_data and user_data[3]:  # win_id существует
+    if user_data and user_data[3]:  # win_id существует - пользователь уже зарегистрирован
         attempts_left = bot_instance.check_and_reset_attempts(user.id)
 
         if attempts_left > 0:
@@ -270,8 +272,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
-                f"🎯 Добро пожаловать в бота \"Сигнал от Aviator\"! ✈️\n\n"
-                f"У вас осталось попыток: {attempts_left}/3\n\n"
+                f"✅ Вы уже зарегистрированы!\n\n"
+                f"🆔 Ваш ID: {user_data[3]}\n\n"
+                f"🎯 У вас осталось попыток: {attempts_left}/3\n\n"
                 f"Нажмите кнопку ниже, чтобы получить сигнал! 🚀",
                 reply_markup=reply_markup
             )
@@ -280,16 +283,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             import urllib.parse
             encoded_text = urllib.parse.quote(share_text)
             keyboard = [
-                [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")],
+                [InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user.id}&text={encoded_text}")],
                 [InlineKeyboardButton("🔗 Моя реферальная ссылка", callback_data="my_referral_link")]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
-                "😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
+                f"✅ Вы уже зарегистрированы!\n\n"
+                f"🆔 Ваш ID: {user_data[3]}\n\n"
+                f"😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
                 reply_markup=reply_markup
             )
     else:
-        # Показываем стартовое сообщение
+        # Новый пользователь - показываем стартовое сообщение для регистрации
         casino_link = bot_instance.get_setting('casino_link')
         keyboard = [[InlineKeyboardButton("✅ Я зарегистрировался", callback_data="registered")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
