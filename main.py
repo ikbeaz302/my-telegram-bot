@@ -290,7 +290,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await update.message.reply_text(
                 f"✅ Вы уже зарегистрированы!\n\n"
                 f"🆔 Ваш ID: {user_data[3]}\n\n"
-                f"😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
+                f"😔 У вас закончились попытки! Ждите 12 часов, чтобы получить еще 3 попытки, или пригласите друга, чтобы получить еще 1 попытку! 👥",
                 reply_markup=reply_markup
             )
         return  # Важно! Выходим из функции, чтобы не показывать форму регистрации
@@ -393,7 +393,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await query.edit_message_text(
-                "😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
+                "😔 У вас закончились попытки! Ждите 12 часов, чтобы получить еще 3 попытки, или пригласите друга, чтобы получить еще 1 попытку! 👥",
                 reply_markup=reply_markup
             )
             return
@@ -434,7 +434,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             encoded_text = urllib.parse.quote(share_text)
             keyboard = [[InlineKeyboardButton("👥 Пригласить друга", url=f"https://t.me/share/url?url=https://t.me/{BOT_USERNAME}?start=ref={user_id}&text={encoded_text}")]]
             reply_markup = InlineKeyboardMarkup(keyboard)
-            caption = f"🎯 Ваш сигнал: {coefficient}x\n\n📊 Попытки закончились! Пригласите друга для получения дополнительных попыток."
+            caption = f"🎯 Ваш сигнал: {coefficient}x\n\n😔 У вас закончились попытки! Ждите 12 часов, чтобы получить еще 3 попытки, или пригласите друга, чтобы получить еще 1 попытку! 👥"
 
         await context.bot.send_photo(
             chat_id=query.message.chat_id,
@@ -504,7 +504,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
                 await query.edit_message_text(
-                    "😔 У вас закончились попытки! Если хотите получить еще один сигнал — пригласите друга! 👥",
+                    "😔 У вас закончились попытки! Ждите 12 часов, чтобы получить еще 3 попытки, или пригласите друга, чтобы получить еще 1 попытку! 👥",
                     reply_markup=reply_markup
                 )
 
